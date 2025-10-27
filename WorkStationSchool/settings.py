@@ -16,13 +16,13 @@ SECRET_KEY = "dlsakt4ing9439as09wngpdsbjn4-bj94gmsdflçkb9"
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'syswebschoolmanagement.onrender.com', 'localhost', '127.0.0.1'
+    'gerenciadorescola.onrender.com', 'localhost', '127.0.0.1'
 ]
 CORS_ALLOWED_ORIGINS = [
-    'https://127.0.0.1:8000', 'https://syswebschoolmanagement.onrender.com'
+    'https://127.0.0.1:8000', 'https://gerenciadorescola.onrender.com'
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "https://syswebschoolmanagement.onrender.com", "https://127.0.0.1:8000"
+    "https://gerenciadorescola.onrender.com", "https://127.0.0.1:8000"
 ]
 
 
