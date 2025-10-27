@@ -1,0 +1,218 @@
+/* GERAL */
+:root{
+    --cor-infos: #51A3A3;
+    --cor-main: #1F2633;
+    --cor-links: black;
+    --borda: 1px black solid;
+}
+*{
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+}
+/* Definindo a animação de rotação */
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+/* TAGS */
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--cor-main);
+
+    h2{
+        justify-content: center;
+        align-self: center;
+        color: white;
+        margin: 1rem;
+    }
+    hr{
+        width: 80%;
+        align-self: center;
+    }
+}
+a{
+    color: var(--cor-links);
+}
+nav{
+    display: flex;
+    justify-content: space-between;
+    border: 0.1rem black solid;
+    padding: 1.2rem;
+    height: 6rem;
+    background-color: rgb(212, 211, 203);
+
+    img{
+        width: 4rem;
+        border-radius: 5rem;
+    }
+    h1{
+        justify-self: center;
+        align-self: center; 
+    }
+}
+.spanInfo {
+    height: 0;
+    font-size: 1rem;
+    color: red;
+    display: none;
+    font-weight: 700;
+}
+
+/* CLASSES */
+/* Estilo para o container do dropdown */
+.dropdown{
+    margin-right: 2rem;
+    position: relative;
+
+    .dropdown_menu{
+        position: absolute;
+        border: 0.1rem black solid;
+        width: 7rem;
+        display: none;
+        background-color: #51A3A3;
+    }
+}
+.dropdown:hover .dropdown_menu{
+    right: 1.7rem;
+    top: 88%;
+    height: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.4rem;
+
+    a{
+        align-self: center;
+    }
+}
+.infos{
+    text-align: center;
+    align-self: center;
+    align-content: center;
+    width: 20rem;
+    height: 21rem;
+    border: 0.1rem black solid;    
+    border-radius: 0.7rem;
+    background-color: var(--cor-infos);
+}
+.infos_content{
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    
+    .infos_content_grupo{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    a{
+        align-self: flex-end;
+        margin-right: 1rem;
+    }
+    input{
+        text-align: center;
+        width: 10rem;
+        height: 1.5rem;
+        margin-right: 1.5rem;
+        border-radius: 0.2rem;
+        border: none;
+    }
+    input[type=submit]{
+        text-align: center;
+        width: 3.5rem;
+        align-self: center;
+        border-radius: 0.2rem;
+        border: none;
+    }
+    label{
+        margin-left: 1rem;
+    }
+    p{
+        font-size: large;
+        font-weight: bold;
+    }
+}
+.title_form{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    a{
+        margin-left: 1rem;
+    }
+    p{
+        margin-right: 10rem;
+    }
+}
+
+/* IDs */
+#carregamento {
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 2em;
+    display: none;
+    flex-direction: column;
+    img {
+        animation: rotation 2s linear infinite;
+    }
+}
+
+/* TELA DE POP-UP */
+.modal, .modalDocente, .modalAluno {
+    display: none; /* Inicia oculto */
+    position: fixed; /* Posição fixa na tela */
+    z-index: 1; /* Sobrepondo outros elementos */
+    justify-content: center;
+    flex-wrap: wrap;
+    align-content: center;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Adiciona rolagem se necessário */
+    background-color: rgba(0, 0, 0, 0.705); /* Fundo semi-transparente */
+    /* Estilo para o conteúdo do modal */
+    .modal-content {
+      display: flex;
+      flex-direction: column;
+      background-color: #fefefe;
+      border: 1px solid #888;
+      color: #000;
+      border-radius: 1rem;
+    }
+    
+    /* Estilo para o botão de fechar */
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+}
+
+  

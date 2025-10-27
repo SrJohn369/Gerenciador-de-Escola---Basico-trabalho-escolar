@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container h-100 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-person-plus me-2"></i>{{ titulo|default:"Cadastro Direção" }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="cadastro-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-2"></i>Nome Completo
+                                </label>
+                                <input type="text" class="form-control" name="nome" id="nomeCad" 
+                                       placeholder="Digite seu nome completo" 
+                                       value="{% if direcao %}{{ direcao.user.first_name }} {{ direcao.user.last_name }}{% endif %}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="cpf" class="form-label fw-semibold">
+                                    <i class="bi bi-card-text me-2"></i>CPF
+                                </label>
+                                <input type="text" class="form-control" name="cpf" id="cpfCad" 
+                                       placeholder="000.000.000-00" 
+                                       value="{% if direcao %}{{ direcao.cpf }}{% endif %}" 
+                                       {% if direcao %}readonly{% endif %} required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="Data de Nascimento" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar me-2"></i>Data de Nascimento
+                                </label>
+                                <input type="date" class="form-control" name="Data de Nascimento" id="dateCad" 
+                                       value="{% if direcao %}{{ direcao.data_nasc|date:'Y-m-d' }}{% endif %}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="Email" class="form-label fw-semibold">
+                                    <i class="bi bi-envelope me-2"></i>Email
+                                </label>
+                                <input type="email" class="form-control" name="Email" id="emailCad" 
+                                       placeholder="seu@email.com" 
+                                       value="{% if direcao %}{{ direcao.user.email }}{% endif %}" required>
+                            </div>
+                        </div>
+                        
+                        {% if not direcao %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="Senha" class="form-label fw-semibold">
+                                    <i class="bi bi-lock me-2"></i>Senha
+                                </label>
+                                <input type="password" class="form-control" name="Senha" id="senhaCad" 
+                                       placeholder="Crie uma senha segura" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="Confirmar Senha" class="form-label fw-semibold">
+                                    <i class="bi bi-lock-fill me-2"></i>Confirmar Senha
+                                </label>
+                                <input type="password" class="form-control" name="Confirmar Senha" id="confirmSenhaCad" 
+                                       placeholder="Confirme sua senha" required>
+                            </div>
+                        </div>
+                        
+                        <div id="senhasIncorretas" class="alert alert-warning d-none" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>As senhas não correspondem!
+                        </div>
+                        {% endif %}
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="{% if user.is_authenticated %}{% url 'direcao:direcao' %}{% else %}{% url 'loginInicio:login_usuario' %}{% endif %}" 
+                               class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submit-cad">
+                                <i class="bi bi-check-lg me-2"></i>{{ submit|default:'Criar Usuário' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="cadSuccessfully" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-check-circle me-2"></i>Cadastro Realizado!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <p class="mt-3 mb-0">Cadastro efetuado com sucesso!</p>
+                <div class="mt-3 p-3 bg-light rounded">
+                    <div id="dados_user">
+                        <p id="dados_user_nameUser" class="mb-1 fw-semibold"></p>
+                        <p id="dados_user_pass" class="mb-0 text-muted"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="voltarConfirm()">
+                    {% if user.is_authenticated %}
+                    <i class="bi bi-arrow-left me-2"></i>Voltar para Direção
+                    {% else %}
+                    <i class="bi bi-arrow-left me-2"></i>Voltar para Login
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+
+{% block javascript %}
+    <script src={% static "javascript/cadDirecao.js" %}></script>
+{% endblock javascript %}

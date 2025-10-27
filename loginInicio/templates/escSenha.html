@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block estilos %}
+    <link rel="stylesheet" href={% static "css/escSenha.css" %}>
+{% endblock estilos %}
+{% block main %}
+    <div class="infos">
+        <form method="post" class="infos_content">
+            {% csrf_token %}
+            <div class="infos_content_grupo">
+                <label for="Email">Email</label>
+                <input type="email" name="Email" id="emailCad" placeholder="Digite seu email...">
+            </div>
+            <span>Este email não consta no banco de dados. Verifique o email e tente novamente!</span>
+            <input type="submit" value="Enviar">
+        </form>
+    </div>
+{% endblock main %}
+{% block javascript %}{% endblock javascript %}

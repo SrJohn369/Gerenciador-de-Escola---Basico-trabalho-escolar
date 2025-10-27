@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container h-100 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-info text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-person-heart me-2"></i>{{ titulo|default:"Cadastro Aluno(a)" }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="cadastro-form">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-2"></i>Nome Completo
+                                </label>
+                                <input type="text" class="form-control" name="nome" id="nomeCad" 
+                                       placeholder="Digite seu nome completo" 
+                                       value="{% if aluno %}{{ aluno.user.first_name }} {{ aluno.user.last_name }}{% endif %}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="cpf" class="form-label fw-semibold">
+                                    <i class="bi bi-card-text me-2"></i>CPF
+                                </label>
+                                <input type="text" class="form-control" name="cpf" id="cpfCad" 
+                                       placeholder="000.000.000-00" 
+                                       value="{% if aluno %}{{ aluno.cpf }}{% endif %}" 
+                                       {% if aluno %}readonly{% endif %} required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="Data de Nascimento" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar me-2"></i>Data de Nascimento
+                                </label>
+                                <input type="date" class="form-control" name="Data de Nascimento" id="dateCad" 
+                                       value="{% if aluno %}{{ aluno.data_nasc|date:'Y-m-d' }}{% endif %}" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="Email" class="form-label fw-semibold">
+                                    <i class="bi bi-envelope me-2"></i>Email
+                                </label>
+                                <input type="email" class="form-control" name="Email" id="emailCad" 
+                                       placeholder="seu@email.com" 
+                                       value="{% if aluno %}{{ aluno.user.email }}{% endif %}" required>
+                            </div>
+                        </div>
+                        
+                        {% if not aluno %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-key me-2"></i>Senha Temporária
+                            </label>
+                            
+                            <div>
+                                <button type="button" class="btn btn-outline-primary" id="gerePass">
+                                    <i class="bi bi-shuffle me-2"></i>Gerar Senha
+                                </button>
+                            </div>
+                            
+                            <div class="form-text" id="aviso_gerePass_texto">
+                                <i class="bi bi-info-circle me-1"></i>Gere uma senha e anote!
+                            </div>
+
+                            <div class="form-text text-danger" id="aviso_gerePass_erro" style="display: none;">
+                                <i class="bi bi-exclamation-circle me-1"></i>É obrigatório gerar uma senha!
+                            </div>
+
+                            <div id="gerar_senha_area" class="alert alert-secondary mt-3 p-2 d-none">
+                                <span class="fw-semibold">Senha Gerada:</span>
+                                <span id="gerar_senha" class="font-monospace ms-2"></span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href={% url "aluno:aluno" %} class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-info" id="submit">
+                                <i class="bi bi-check-lg me-2"></i>{{ submit|default:'Cadastrar' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="cadSuccessfully" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-check-circle me-2"></i>Cadastro Realizado!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <p class="mt-3 mb-0">Cadastro efetuado com sucesso!</p>
+                <div class="mt-3 p-3 bg-light rounded">
+                    <div id="dados_user">
+                        <p id="dados_user_nameUser" class="mb-1 fw-semibold"></p>
+                        <p id="dados_user_pass" class="mb-0 text-muted"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="voltarConfirm()">
+                    <i class="bi bi-arrow-left me-2"></i>Voltar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+
+{% block javascript %}
+    <script src={% static "javascript/cadAluno.js" %}></script>
+{% endblock javascript %}

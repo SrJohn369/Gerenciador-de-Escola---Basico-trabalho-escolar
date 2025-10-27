@@ -1,0 +1,24 @@
+.infos{
+    align-content: flex-start;
+    width: 50rem;
+    height: 83vh;
+    background-color: var(--cor-main);
+    border: none;
+}
+.infos_content{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-top: 5rem;
+    justify-content: center;
+    a{
+        border-radius: 1rem;
+        background-color: var(--cor-infos);
+        color: black;
+        font-weight: bold;
+        align-content: center;
+        width: 10rem;
+        height: 5rem;
+    }
+}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container h-100 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-warning text-dark text-center py-3">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-book me-2"></i>{{ data_static|default:"Cadastro Disciplina" }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="cadastro-form">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="nome" class="form-label fw-semibold">
+                                <i class="bi bi-book-half me-2"></i>Nome da Disciplina
+                            </label>
+                            <input type="text" class="form-control form-control-lg" name="nome" id="nomeCad" 
+                                   placeholder="Digite o nome da disciplina" 
+                                   value="{% if disciplina %}{{ disciplina.nome_disciplina }}{% endif %}" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="Data de Nascimento" class="form-label fw-semibold">
+                                <i class="bi bi-calendar me-2"></i>Data de Criação
+                            </label>
+                            <input type="date" class="form-control form-control-lg" name="Data de Nascimento" id="dateCad" 
+                                   value="{% if disciplina %}{{ disciplina.data_criacao|date:'Y-m-d' }}{% endif %}" required>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href={% url "disciplina:disciplina" %} class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-warning" id="cad_turma">
+                                <i class="bi bi-check-lg me-2"></i>{{ data_static|default:"Criar" }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="cadSuccessfully" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-check-circle me-2"></i>Cadastro Realizado!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+                <p class="mt-3 mb-0">Cadastro efetuado com sucesso!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="voltarConfirm()">
+                    <i class="bi bi-check-lg me-2"></i>Concluir
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+
+{% block javascript %}
+<script src={% static "javascript/cadDisciplina.js" %}></script>
+{% endblock javascript %}

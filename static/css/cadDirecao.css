@@ -1,0 +1,32 @@
+.infos{
+    margin: 3rem;
+    width: 30rem;
+    height: 27.5rem;
+}
+.infos_content input[type=submit]{
+    width: 7rem;
+}
+nav img{
+    display: none;
+}
+.modal-content {
+    width: 20%;
+    height: 50%;
+    border-radius: 0.5rem;
+}
+.opcoes-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 800;
+    gap: 1.5rem;
+    img {
+        width: 5rem;
+    }
+    button {
+        width: fit-content;
+        padding: 0.5rem;
+    }
+}

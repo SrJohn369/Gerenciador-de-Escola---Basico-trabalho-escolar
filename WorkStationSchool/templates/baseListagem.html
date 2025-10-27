@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container-fluid h-100 d-flex flex-column">
+    <div class="row flex-grow-1">
+        <div class="col-12 d-flex flex-column">
+            <div class="card shadow-lg border-0 rounded-4 flex-grow-1 d-flex flex-column">
+                <div class="card-header bg-primary text-white">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="mb-0 fw-bold">
+                                <i class="bi bi-list-ul me-2"></i>{{data_static.titulo}}
+                            </h3>
+                        </div>
+                        {% if data_static.link %}
+                        <div class="col-auto">
+                            <a href='{% url data_static.link %}' class="btn btn-light btn-sm">
+                                <i class="bi bi-plus-lg me-2"></i>Adicionar Novo
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 flex-grow-1 d-flex flex-column">
+                    
+                    <div class="row mb-4 justify-content-between align-items-center">
+                        
+                        <div class="col-md-4">
+                            <a href="{% url 'loginInicio:inicio' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar ao Menu
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="search" class="form-control" placeholder="Digite o nome para pesquisar..." id="pesquisa">
+                                <button class="btn btn-outline-primary" type="button">
+                                    <i class="bi bi-search me-1"></i>Pesquisar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive flex-grow-1">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    {% for th in data_static.th_tabela %}
+                                    {% if data_static.titulo == 'Turma' and th == 'Opções'%}
+                                    <th style="width: 22rem;">{{th}}</th>
+                                    {% else %}
+                                    <th>{{th}}</th>
+                                    {% endif %}    
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for data in data_cadastros %}
+                                <tr id="{{data.id}}" class="align-middle">
+                                    {% if data.cpf %}
+                                    <td>
+                                        <i class="bi bi-person me-2"></i>{{data.nome}}
+                                    </td>
+                                    <td>{{data.cpf}}</td>
+                                    <td>{{data.data_nascimento}}</td>
+                                    {% elif data.nome_disciplina %}
+                                    <td>
+                                        <i class="bi bi-book me-2"></i>{{data.nome_disciplina}}
+                                    </td>
+                                    <td>{{data.data_criacao}}</td>
+                                    {% elif data.ano %}
+                                    <td>
+                                        <i class="bi bi-people me-2"></i>{{data.nome_turma}}
+                                    </td>
+                                    <td>{{data.ano}}</td>
+                                    <td>{{data.data_criacao}}</td>
+                                    {% endif %}
+                                    
+                                    <td>
+                                        {% if data.links %}
+                                        <div class="btn-group" role="group">
+                                            {% for td, link_name in data.links.items %}
+                                            {% if td == 'Alterar' %}
+                                            <a href="#" onclick="linkMudança(event, '{% url link_name data.id %}', '{{td}}', {{data.id}})" 
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="bi bi-pencil me-1"></i>{{td}}
+                                            </a>
+                                            {% elif td == 'Excluir' %}
+                                            <a href="#" onclick="linkMudança(event, '{% url link_name data.id %}', '{{td}}', {{data.id}})" 
+                                               class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash me-1"></i>{{td}}
+                                            </a>
+                                            {% elif 'Ver ' in td %}
+                                            <a href="#" class="btn btn-outline-info btn-sm" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#infoPopup"
+                                                        data-bs-url="{% url link_name data.id %}">
+                                                <i class="bi bi-eye me-1"></i>{{td}}
+                                            </a>
+                                            {% else %}
+                                            <a href="#" onclick="linkMudança(event, '{% url link_name data.id %}', '{{td}}', {{data.id}})" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-gear me-1"></i>{{td}}
+                                            </a>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% elif data_static.td_links %}
+                                        <div class="btn-group" role="group">
+                                            {% for td, link_name in data_static.td_links.items %}
+                                            {% if td == 'Alterar' %}
+                                            <a href="#" onclick="linkMudança(event, '{% url link_name data.id %}', '{{td}}', {{data.id}})" 
+                                               class="btn btn-outline-warning btn-sm">
+                                                <i class="bi bi-pencil me-1"></i>{{td}}
+                                            </a>
+                                            {% elif td == 'Excluir' %}
+                                            <a href="#" onclick="linkMudança(event, '{% url link_name data.id %}', '{{td}}', {{data.id}})" 
+                                               class="btn btn-outline-danger btn-sm">
+                                                <i class="bi bi-trash me-1"></i>{{td}}
+                                            </a>
+                                            {% else %}
+                                            <a href="#" onclick="linkMudança(event, '{% url link_name data.id %}', '{{td}}', {{data.id}})" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-gear me-1"></i>{{td}}
+                                            </a>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="{{data_static.th_tabela|length}}" class="text-center text-muted py-4">
+                                        <i class="bi bi-inbox me-2"></i>Nenhum registro encontrado
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <tr id="filtro-nenhum-resultado" style="display: none;">
+                                    <td colspan="{{data_static.th_tabela|length}}" class="text-center text-warning py-4">
+                                        <i class="bi bi-search-heart me-2"></i>Nenhum resultado encontrado para a sua pesquisa.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}
+
+{% block modal %}
+<div id="infoPopup" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="popupTitulo">Carregando...</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="popupCorpo">
+                <div class="text-center">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modal %}
+
+{% block javascript %}
+<script>
+    window.csrfToken = "{{ csrf_token }}";
+
+    // Espera o DOM carregar
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // Pega os elementos
+        const inputPesquisa = document.getElementById('pesquisa');
+        const tbody = document.querySelector('.table tbody');
+        
+        // Seleciona APENAS as linhas de dados (que têm um 'id')
+        const todasLinhas = tbody.querySelectorAll('tr[id]'); 
+        
+        // Pega a linha de "nenhum resultado" que acabámos de criar
+        const linhaFiltroVazio = document.getElementById('filtro-nenhum-resultado');
+
+        // Adiciona o "ouvinte" ao campo de pesquisa
+        inputPesquisa.addEventListener('input', () => {
+            const termoPesquisa = inputPesquisa.value.toLowerCase().trim();
+            let linhasVisiveis = 0;
+
+            // Percorre todas as linhas de dados
+            todasLinhas.forEach(linha => {
+                // CORREÇÃO: Verifica se a linha não é a "filtro-nenhum-resultado"
+                if (linha.id === 'filtro-nenhum-resultado') return;
+
+                const textoLinha = linha.textContent.toLowerCase();
+
+                // Verifica se o texto da linha inclui o termo pesquisado
+                if (textoLinha.includes(termoPesquisa)) {
+                    linha.style.display = ""; // Mostra a linha
+                    linhasVisiveis++;
+                } else {
+                    linha.style.display = "none"; // Esconde a linha
+                }
+            });
+
+            // Mostra ou esconde a mensagem de "nenhum resultado"
+            // Só mostra se houver linhas de dados para filtrar (todasLinhas.length > 0)
+            if (linhasVisiveis === 0 && (todasLinhas.length > 1 || (todasLinhas.length === 1 && todasLinhas[0].id !== 'filtro-nenhum-resultado'))) {
+                linhaFiltroVazio.style.display = ""; // Mostra a mensagem
+            } else {
+                linhaFiltroVazio.style.display = "none"; // Esconde a mensagem
+            }
+        });
+    });
+</script>
+<script src="{% static "javascript/alterarExcluir.js" %}"></script>
+{% endblock javascript %}

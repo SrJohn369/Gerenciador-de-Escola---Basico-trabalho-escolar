@@ -1,0 +1,61 @@
+main{
+    height: 83.5vh;
+    justify-content: flex-start;
+}
+
+.listagem{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.titulo{
+    display: flex;
+    color: aliceblue;
+    gap: 1.3rem;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+}
+.pesquisa{
+    margin: 1rem 0;
+    width: 30rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    input[type=search]{
+        width: 60%;
+        border-radius: 0.2rem;
+        border: none;
+        height: 1.5rem;
+    }
+    label{
+        color: aliceblue;
+        font-weight: 500;
+    }
+    button{
+        padding: 0.2rem;
+    }
+}
+
+table{
+    background-color: #5edfdf;
+    border-collapse: collapse;
+
+    th{
+        background-color: var(--cor-infos);
+        border-right: 2px black solid;
+        width: 10rem;
+    }
+    td{
+        border-right: 2px black solid;
+        text-align: center;
+        a {
+            margin: 0 0.4rem;
+            color: blue;
+            text-decoration: underline;
+        }
+    }
+}

@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block main %}
+<div class="container h-100 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-10 col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-secondary text-white text-center py-3">
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-people me-2"></i>{{ submit|default:"Cadastro Turma" }}
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" id="cadastro-form">
+                        {% csrf_token %}
+                        
+                        <!-- Informações Básicas -->
+                        <div class="row mb-4">
+                            <div class="col-md-4 mb-3">
+                                <label for="nome" class="form-label fw-semibold">
+                                    <i class="bi bi-tag me-2"></i>Nome da Turma
+                                </label>
+                                <input type="text" class="form-control" name="nome_turma" id="nomeCad" 
+                                       placeholder="Digite o nome da turma" 
+                                       value="{{ turma.nome_turma|default:'' }}" required>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="ano" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar3 me-2"></i>Ano
+                                </label>
+                                <input type="number" class="form-control" name="ano" id="ano" 
+                                       placeholder="Ex: 2024" 
+                                       value="{{ turma.ano|default:'' }}" required>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="data_criacao" class="form-label fw-semibold">
+                                    <i class="bi bi-calendar me-2"></i>Data de Criação
+                                </label>
+                                <input type="date" class="form-control" name="data_criacao" id="dateCad" 
+                                       value="{{ turma.data_criacao|date:'Y-m-d' }}" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Botões de Vinculação -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-primary"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#myModalDocente">
+                                        <i class="bi bi-person-badge me-2"></i>Vincular Docentes
+                                    </button>
+                                    <button type="button" class="btn btn-outline-info" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#myModalAluno">
+                                        <i class="bi bi-person-heart me-2"></i>Vincular Alunos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botões de Ação -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href={% url "turma:turma" %} class="btn btn-outline-secondary me-md-2">
+                                <i class="bi bi-arrow-left me-2"></i>Voltar
+                            </a>
+                            <button type="submit" class="btn btn-secondary" id="submit_btn">
+                                <i class="bi bi-check-lg me-2"></i>{{ submit|default:"Criar Turma" }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock main %}
+
+{% block modal %}
+<!-- Modal Docentes -->
+<div id="myModalDocente" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-badge me-2"></i>Vincular Docente(s)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    {% for docente in data_docente %}
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="docentes" 
+                                   id="docente_{{ docente.id }}" value="{{ docente.id }}"
+                                   {% if turma and docente.turma == turma %}checked{% endif %} form="cadastro-form">
+                            <label class="form-check-label" for="docente_{{ docente.id }}">
+                                <i class="bi bi-person me-1"></i>{{ docente.nome }}
+                            </label>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center text-muted">
+                        <i class="bi bi-info-circle me-2"></i>SEM DOCENTES CADASTRADOS
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Alunos -->
+<div id="myModalAluno" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-heart me-2"></i>Vincular Aluno(a)
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    {% for aluno in data_aluno %}
+                    <div class="col-md-6 mb-2">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="alunos" 
+                                   id="aluno_{{ aluno.pk }}" value="{{ aluno.id }}"
+                                   {% if turma and aluno.turma == turma %}checked{% endif %} form="cadastro-form">
+                            <label class="form-check-label" for="aluno_{{ aluno.id }}">
+                                <i class="bi bi-person me-1"></i>{{aluno.nome}}<br>
+                                <small class="text-muted">CPF: {{aluno.cpf}} | Nasc: {{aluno.data_nasc}}</small>
+                            </label>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center text-muted">
+                        <i class="bi bi-info-circle me-2"></i>SEM ALUNOS CADASTRADOS (ou todos já têm turma)
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock modal %}
+
+{% block javascript %}
+{% endblock javascript %}

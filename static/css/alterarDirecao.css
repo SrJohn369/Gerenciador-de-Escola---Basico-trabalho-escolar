@@ -1,0 +1,48 @@
+.infos{
+    width: 36rem;
+    height: 30rem;
+    margin: 2rem;
+}
+.infos_content{
+    gap: 1rem;
+    margin-left: 1rem;
+    input[type=submit]{
+        margin-top: 2rem;
+    }
+    button{
+        width: fit-content;
+        padding: 0.5rem;
+        margin-left: 1rem;
+    }
+    .infos_content_grupo{
+        width: 65%;
+    }
+}
+.btn_alterar_senha{
+    display: flex;
+    flex-direction: column;
+    display: none;
+
+    .senha_antiga{
+        width: 47%;
+        display: flex;
+        justify-content: space-between;
+        input{width: 6rem;}
+    }
+    .nova_senha{
+        display: flex;
+        column-gap: 0rem;
+        margin-top: 1rem;
+    
+        input{
+            width: 6rem;
+            margin: 0 0 0 1.8rem;
+        }
+        .nova_senha_itens{
+            display: flex;
+            align-items: center;
+            label{margin-right: 0.7rem;}
+        }
+    }
+
+}
