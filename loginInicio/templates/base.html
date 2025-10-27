@@ -105,23 +105,41 @@
     {% block javascript %}{% endblock javascript %}
     
     <script>
-        // CPF formatting script
+        /**
+         * Formata um valor para o padrão de CPF (999.999.999-99).
+         * @param {string} valor - O valor atual do input.
+         * @returns {string} - O valor formatado.
+         */
+         function formatarCPF(valor) {
+            // 1. Remove tudo que não for dígito
+            let valorLimpo = valor.replace(/\D/g, '');
+
+            // 2. Limita a 11 dígitos (o tamanho máximo de um CPF)
+            valorLimpo = valorLimpo.substring(0, 11);
+
+            // 3. Aplica a máscara dinamicamente
+            // Adiciona o primeiro ponto
+            valorLimpo = valorLimpo.replace(/(\d{3})(\d)/, '$1.$2');
+            // Adiciona o segundo ponto
+            valorLimpo = valorLimpo.replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3');
+            // Adiciona o hífen
+            valorLimpo = valorLimpo.replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+            
+            return valorLimpo;
+        }
+
+        /**
+         * "Ouvinte" global de input (event delegation).
+         * Isto ouve o evento 'input' em qualquer parte do documento.
+         */
         document.addEventListener('input', (event) => {
-            if (event.target && event.target.id === 'cpf_input') {
-                let newValue = event.target.value.replace(/\s+/g, '');
-                let arraySTR = newValue.split("");
+            
+            // Verifica se o elemento que disparou o evento tem o atributo 'data-format="cpf"'
+            if (event.target && event.target.dataset.format === 'cpf') {
                 
-                setTimeout(() => {
-                    if (arraySTR.length === 3 && !newValue.includes(".")) {
-                        arraySTR.splice(3,0,".");
-                    } else if (arraySTR.length === 7 && newValue.includes(".")) {
-                        arraySTR.splice(7,0,".");
-                    } else if (arraySTR.length === 11 && !newValue.includes("-")) {
-                        arraySTR.splice(11,0,"-");
-                    }
-                    newValue = arraySTR.join("");
-                    event.target.value = newValue;
-                }, 100);
+                // Pega o valor, formata, e atualiza o input
+                // Isto acontece a cada tecla digitada.
+                event.target.value = formatarCPF(event.target.value);
             }
         });
     </script>

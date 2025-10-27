@@ -1,16 +1,10 @@
-// --- CORREÇÃO 1: CÓDIGO DO 'img-drop' REMOVIDO ---
-// O 'if (isAuthenticated)' e o 'img-drop' foram removidos 
-// porque o elemento 'img-drop' não existe no teu cadDirecao.html.
-
 // Inicializa o modal de sucesso
 let modalSuccess = new bootstrap.Modal(document.getElementById('cadSuccessfully'));
 
-// --- CORREÇÃO 2: INICIALIZAR O MODAL DE CARREGAMENTO ---
-// O 'carregamento' é um modal, não um 'div' normal.
-const loadingModalElement = document.getElementById('carregamento'); // Referência ao modal no base.html
+// Inicializa o modal de carregamento (do base.html)
+const loadingModalElement = document.getElementById('carregamento');
 let loadingModal = null;
 if (loadingModalElement) {
-    // Inicializa o modal do Bootstrap para podermos usar .show() e .hide()
     loadingModal = new bootstrap.Modal(loadingModalElement);
 }
 
@@ -40,11 +34,14 @@ function voltarConfirm() {
     }
 }
 
-// Procura o botão de submit (ID 'submit-cad' existe no HTML)
-const submitButton = document.getElementById('submit-cad');
+// --- ### CORREÇÃO AQUI ### ---
+// 1. Procura o FORMULÁRIO, e não o botão
+const form = document.getElementById('cadastro-form');
 
-if (submitButton) { // Adiciona verificação para segurança
-    submitButton.addEventListener('click', async (event) => {
+if (form) { // 2. Verifica se o formulário existe
+    // 3. Ouve o evento 'submit' no formulário
+    form.addEventListener('submit', async (event) => {
+        // 4. Agora o 'preventDefault' acontece DEPOIS da validação 'required'
         event.preventDefault()
         let csrf_token = getCookie('csrftoken');
 
@@ -72,64 +69,59 @@ if (submitButton) { // Adiciona verificação para segurança
             })
         }
         
-        // --- CORREÇÃO 3: LER A SENHA APENAS NO MODO DE CRIAÇÃO ---
         let senhaCad = ''; // Inicializa a senha
-        if (!isEditMode) { //
-            // Os campos de senha só existem no modo de criação
+        if (!isEditMode) { 
             senhaCad = document.getElementById('senhaCad').value;
             
-            // verifica senhas apenas na criação
-            if (!verifyPass()) { //
-                const avisoSenha = document.getElementById('senhasIncorretas'); //
-                if (avisoSenha) avisoSenha.classList.remove('d-none'); //
-                return; //
+            // A verificação de 'verifyPass' (senhas iguais) continua a ser
+            // uma ótima validação manual.
+            if (!verifyPass()) { 
+                const avisoSenha = document.getElementById('senhasIncorretas'); 
+                if (avisoSenha) avisoSenha.classList.remove('d-none'); 
+                return; 
             }
             
-            // Reconstrói o body para incluir os dados de criação
-            dados.body = JSON.stringify({ //
-                'usuario': nomeCad, //
-                'senha': senhaCad, //
-                'cpf': cpfCad, //
-                'data_nascimento': dateCad, //
-                'email': emailCad //
+            dados.body = JSON.stringify({ 
+                'usuario': nomeCad, 
+                'senha': senhaCad, 
+                'cpf': cpfCad, 
+                'data_nascimento': dateCad, 
+                'email': emailCad 
             });
         }
 
-        // --- CORREÇÃO 2: USAR O MODAL DE CARREGAMENTO CORRETAMENTE ---
-        if (loadingModal) loadingModal.show(); // Em vez de style.display
+        if (loadingModal) loadingModal.show(); 
 
-        await fetch(url, dados) //
-        .then(async (response) => { // 'async' para ler JSON de erro
-            if (response.status === 201 || response.status === 200) { //
-                if (loadingModal) loadingModal.hide(); // Esconde o modal
+        await fetch(url, dados) 
+        .then(async (response) => { 
+            if (response.status === 201 || response.status === 200) { 
+                if (loadingModal) loadingModal.hide(); 
                 
-                if (isEditMode) { //
-                    alert('Direção atualizada com sucesso!'); //
-                    window.location.href = '/direcao/'; //
+                if (isEditMode) { 
+                    alert('Direção atualizada com sucesso!'); 
+                    window.location.href = '/direcao/'; 
                 } else {
-                    modalSuccess.show(); //
-                    return response.json(); //
+                    modalSuccess.show(); 
+                    return response.json(); 
                 }
             } else {
-                if (loadingModal) loadingModal.hide(); // Esconde o modal
+                if (loadingModal) loadingModal.hide(); 
                 
-                // Tenta ler a mensagem de erro da view (ex: CPF já existe)
                 const errorData = await response.json().catch(() => null);
                 const msg = errorData ? errorData.mensagem : `Erro ${response.status}`;
                 alert(`Erro ao processar: ${msg}`);
             }
         })
         .then((data) => {
-            if (data) { //
-                // (Isto só executa no cadastro 201)
-                document.getElementById('dados_user_nameUser').innerHTML = 'Usuário: '  + data.user; //
-                document.getElementById('dados_user_pass').innerHTML = 'Senha: ' + senhaCad; //
+            if (data) { 
+                document.getElementById('dados_user_nameUser').innerHTML = 'Usuário: '  + data.user; 
+                document.getElementById('dados_user_pass').innerHTML = 'Senha: ' + senhaCad; 
             }
         })
         .catch((error) => {
-            if (loadingModal) loadingModal.hide(); // Esconde o modal
-            console.log('Ocorreu um erro:', error); //
-            alert('Erro ao processar solicitação'); //
+            if (loadingModal) loadingModal.hide(); 
+            console.log('Ocorreu um erro:', error); 
+            alert('Erro ao processar solicitação'); 
         });
     });
 }

@@ -27,13 +27,23 @@ def login_usuario(request):
         data = json.loads(request.body)
         login_usuario = data.get('usuario')
         login_senha = data.get('senha')
+        user_existe = User.objects.filter(username=login_usuario).exists()
+        
+        if not user_existe:
+            # Retorna 404 (Not Found) se o USUÁRIO não for encontrado
+            return JsonResponse({'mensagem': 'Usuário não existe'}, status=404)
+
+        # O usuário existe. A senha está correta?
+        # Agora autenticamos
         user = authenticate(username=login_usuario, password=login_senha)
         
         if user is not None:
+            # Sucesso
             login(request, user)
             return JsonResponse({'mensagem': 'Sucesso no login'}, status=200)
         else:
-            return JsonResponse({'mensagem': 'Usuario ou senha incorreta'}, status=404)
+            # Retorna 401 (Unauthorized) se a SENHA estiver incorreta
+            return JsonResponse({'mensagem': 'Senha incorreta'}, status=401)
         
 
 @login_required(login_url='loginInicio:login_usuario')
@@ -101,10 +111,32 @@ def cadDirecao(request):
         # Se chegámos aqui, ambos foram criados com sucesso
         return JsonResponse(data=data, status=201)
 
-    
-@login_required(login_url='loginInicio:login_usuario')
+
+@csrf_protect
 def escSenha(request):
     if request.method == 'GET':
         return render(request, 'escSenha.html')
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('usuario')
+            nova_senha = data.get('senha')
+            # Usamos get() que levanta uma exceção se não encontrar
+            user = User.objects.get(username=username)
+            
+            # O set_password() trata de hashear a senha corretamente
+            user.set_password(nova_senha)
+            user.save()
+            
+            # Retorna 200 (OK) se foi bem-sucedido
+            return JsonResponse({'mensagem': 'Senha alterada com sucesso!'}, status=200)
+
+        except User.DoesNotExist:
+            # Retorna 404 (Not Found) se o usuário não foi encontrado
+            return JsonResponse({'mensagem': 'Usuário não encontrado'}, status=404)
+        except Exception as e:
+            # Retorna 500 para qualquer outro erro
+            return JsonResponse({'mensagem': f'Erro interno: {e}'}, status=500)
 
 

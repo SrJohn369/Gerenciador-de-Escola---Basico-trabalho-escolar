@@ -32,7 +32,8 @@
                                 <input type="text" class="form-control" name="cpf" id="cpfCad" 
                                        placeholder="000.000.000-00" 
                                        value="{% if docente %}{{ docente.cpf }}{% endif %}" 
-                                       {% if docente %}readonly{% endif %} required>
+                                       {% if docente %}readonly{% endif %} required
+                                       data-format="cpf">
                             </div>
                         </div>
                         
