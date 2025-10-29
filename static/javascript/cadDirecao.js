@@ -1,3 +1,5 @@
+// cadDirecao
+
 // Inicializa o modal de sucesso
 let modalSuccess = new bootstrap.Modal(document.getElementById('cadSuccessfully'));
 
@@ -34,14 +36,11 @@ function voltarConfirm() {
     }
 }
 
-// --- ### CORREÇÃO AQUI ### ---
-// 1. Procura o FORMULÁRIO, e não o botão
+// Ouve o 'submit' do formulário (para validar o 'required')
 const form = document.getElementById('cadastro-form');
 
-if (form) { // 2. Verifica se o formulário existe
-    // 3. Ouve o evento 'submit' no formulário
+if (form) { 
     form.addEventListener('submit', async (event) => {
-        // 4. Agora o 'preventDefault' acontece DEPOIS da validação 'required'
         event.preventDefault()
         let csrf_token = getCookie('csrftoken');
 
@@ -53,7 +52,7 @@ if (form) { // 2. Verifica se o formulário existe
         const isEditMode = window.location.pathname.includes('alter_direcao');
         const direcaoId = isEditMode ? window.location.pathname.split('/').pop() : null;
         
-        const url = isEditMode ? `/direcao/alter_direcao/${direcaoId}/` : `/cadastro_direcao/`;
+        const url = isEditMode ? `/direcao/alter_direcao/${direcaoId}` : `/cadastro_direcao/`;
         
         let dados = {
             method: isEditMode ? 'PUT' : 'POST',
@@ -61,7 +60,6 @@ if (form) { // 2. Verifica se o formulário existe
                 'X-CSRFToken': csrf_token,
                 'Content-Type': 'application/json'
             },
-            // Dados padrão para 'PUT' (Alteração)
             body: JSON.stringify({
                 'nome': nomeCad,
                 'data_nascimento': dateCad,
@@ -69,12 +67,10 @@ if (form) { // 2. Verifica se o formulário existe
             })
         }
         
-        let senhaCad = ''; // Inicializa a senha
+        let senhaCad = ''; 
         if (!isEditMode) { 
             senhaCad = document.getElementById('senhaCad').value;
             
-            // A verificação de 'verifyPass' (senhas iguais) continua a ser
-            // uma ótima validação manual.
             if (!verifyPass()) { 
                 const avisoSenha = document.getElementById('senhasIncorretas'); 
                 if (avisoSenha) avisoSenha.classList.remove('d-none'); 
@@ -92,36 +88,35 @@ if (form) { // 2. Verifica se o formulário existe
 
         if (loadingModal) loadingModal.show(); 
 
-        await fetch(url, dados) 
-        .then(async (response) => { 
-            if (response.status === 201 || response.status === 200) { 
-                if (loadingModal) loadingModal.hide(); 
-                
+        // --- ### CORREÇÃO: ADICIONADO TRY...FINALLY ### ---
+        try {
+            const response = await fetch(url, dados);
+
+            if (response.status === 201 || response.status === 200) {
                 if (isEditMode) { 
                     alert('Direção atualizada com sucesso!'); 
                     window.location.href = '/direcao/'; 
                 } else {
+                    const data = await response.json(); // Só faz .json() se for sucesso
                     modalSuccess.show(); 
-                    return response.json(); 
+                    document.getElementById('dados_user_nameUser').innerHTML = 'Usuário: '  + data.user; 
+                    document.getElementById('dados_user_pass').innerHTML = 'Senha: ' + senhaCad; 
                 }
+            } else if (response.status === 404) {
+                 alert('Erro 404: Não Encontrado. A URL está correta no seu urls.py?');
             } else {
-                if (loadingModal) loadingModal.hide(); 
-                
                 const errorData = await response.json().catch(() => null);
                 const msg = errorData ? errorData.mensagem : `Erro ${response.status}`;
                 alert(`Erro ao processar: ${msg}`);
             }
-        })
-        .then((data) => {
-            if (data) { 
-                document.getElementById('dados_user_nameUser').innerHTML = 'Usuário: '  + data.user; 
-                document.getElementById('dados_user_pass').innerHTML = 'Senha: ' + senhaCad; 
-            }
-        })
-        .catch((error) => {
-            if (loadingModal) loadingModal.hide(); 
+        } catch (error) {
             console.log('Ocorreu um erro:', error); 
             alert('Erro ao processar solicitação'); 
-        });
+        } finally {
+            // ### CORREÇÃO DA RACE CONDITION ###
+            setTimeout(() => {
+                if (loadingModal) loadingModal.hide();
+            }, 500); // Atraso de 0.5s
+        }
     });
 }

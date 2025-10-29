@@ -38,16 +38,17 @@ def disciplina(request):
                                                      'data_cadastros': disciplinas_data})
     
 
-@login_required(login_url='loginInicio:login')
+@login_required(login_url='loginInicio:login_usuario')
 def cadDisciplina(request):
     if request.method == 'GET':
         return render(request, 'cadDisciplina.html', {'data_static':'Criar'})
     
+    if request.method == 'PUT': print("ENTROU NO PUT")
     if request.method == 'POST':
         data = json.loads(request.body)
         
         # Dados
-        nome_diciplina = data.get("nome_diciplina")
+        nome_diciplina = data.get("nome_disciplina")
         data_cad_disciplina = data.get("data_cad_disciplina")
         
         # Obj
@@ -65,7 +66,7 @@ def cadDisciplina(request):
             return JsonResponse(data={'mensagem': 'Erro ao salvar'}, status=500)
         
     
-@login_required(login_url='loginInicio:login')    
+@login_required(login_url='loginInicio:login_usuario')    
 def altDisciplina(request, id):
     disciplina = get_object_or_404(Disciplina, id=id)
     
@@ -79,7 +80,7 @@ def altDisciplina(request, id):
     if request.method == "PUT":
         dados = json.loads(request.body)
         
-        nome_disciplina = dados.get('nome_diciplina')
+        nome_disciplina = dados.get('nome_disciplina')
         data_criacao = dados.get('data_cad_disciplina')
         
         disciplina.nome_disciplina = nome_disciplina
@@ -93,7 +94,7 @@ def altDisciplina(request, id):
             return JsonResponse(data={'mensagem': f'Erro interno ao salvar: {err}'}, status=500)
     
 
-@login_required(login_url='loginInicio:login')
+@login_required(login_url='loginInicio:login_usuario')
 def excluirDisciplina(request, id):
     if request.method == "DELETE":
         disciplina = get_object_or_404(Disciplina, id=id)

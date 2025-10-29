@@ -11,78 +11,83 @@ document.addEventListener('DOMContentLoaded', () => {
     // Pega os elementos do formulário
     const loginForm = document.getElementById('login-form');
     const senhaInput = document.getElementById('senha');
-    const usuarioInput = document.getElementById('usuario'); // Pega o input de usuário
+    const usuarioInput = document.getElementById('usuario'); 
 
-    // ### NOVAS REFERÊNCIAS PARA OS ERROS ###
     const spanUsuarioInvalido = document.getElementById('span-usuario-invalido');
     const spanSenhaIncorreta = document.getElementById('span-senha-incorreta');
 
     // --- Limpa erros ao focar ---
-    // Limpa erro da senha
     if (senhaInput) {
         senhaInput.addEventListener('focus', () => {
             if (spanSenhaIncorreta) spanSenhaIncorreta.classList.add('d-none');
         });
     }
-    // Limpa erro do usuário
     if (usuarioInput) {
         usuarioInput.addEventListener('focus', () => {
             if (spanUsuarioInvalido) spanUsuarioInvalido.classList.add('d-none');
         });
     }
-    // --- Fim da limpeza ---
 
-    // Ouve o 'submit' do formulário (que valida o 'required' primeiro)
+    // Ouve o 'submit' do formulário
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             
             let csrf_token = getCookie('csrftoken');
-            let usuario = usuarioInput.value; // Usa a variável
-            let senha = senhaInput.value;   // Usa a variável
+            let usuario = usuarioInput.value; 
+            let senha = senhaInput.value;   
             const url = `/login/`;
 
-            let dados = {
-                method: 'POST',
-                headers: {'X-CSRFToken': csrf_token},
-                body: JSON.stringify({
-                    'usuario': usuario,
-                    'senha': senha
-                })
-            }
+            const data = {
+                'usuario': usuario,
+                'senha': senha
+            };
+            
+            const config = {
+                headers: {
+                    'X-CSRFToken': csrf_token,
+                    'Content-Type': 'application/json'
+                }
+            };
 
             if (loadingModal) loadingModal.show();
-            // Esconde *todos* os erros antes de enviar
             if (spanUsuarioInvalido) spanUsuarioInvalido.classList.add('d-none');
             if (spanSenhaIncorreta) spanSenhaIncorreta.classList.add('d-none');
 
-            await fetch(url, dados)
-                .then((response) => {
-                    if (loadingModal) loadingModal.hide();
+            // --- ### LÓGICA ATUALIZADA COM AXIOS ### ---
+            try {
+                // 1. Tenta fazer o login
+                const response = await axios.post(url, data, config);
 
-                    // --- LÓGICA DE STATUS ATUALIZADA ---
-                    if (response.status === 200) {
-                        console.log('LOGOU');
-                        window.location.href = '/'; // Redireciona para a 'inicio'
-                    
-                    } else if (response.status === 404) {
-                        // 404 = Usuário não encontrado (enviado pelo views.py)
+                // 2. Se chegou aqui, o status é 2xx (SUCESSO)
+                console.log('LOGOU');
+                window.location.href = '/'; 
+
+            } catch (error) {
+                // 3. O Axios envia erros (4xx, 5xx) para o CATCH
+                console.error('Erro no Axios:', error);
+
+                if (error.response) {
+                    if (error.response.status === 404) {
                         if (spanUsuarioInvalido) spanUsuarioInvalido.classList.remove('d-none');
-                    
-                    } else if (response.status === 401) {
-                        // 401 = Senha incorreta (enviado pelo views.py)
+                    } else if (error.response.status === 401) {
                         if (spanSenhaIncorreta) spanSenhaIncorreta.classList.remove('d-none');
-                    
                     } else {
-                        // Outros erros (ex: 500)
-                        alert('Ocorreu um erro inesperado. Status: ' + response.status);
+                        alert('Ocorreu um erro inesperado. Status: ' + error.response.status);
                     }
-                })
-                .catch((error) => {
-                    if (loadingModal) loadingModal.hide();
-                    console.error('Erro no fetch:', error);
+                } else {
                     alert('Erro de rede ao tentar fazer login.');
-                });
+                }
+
+            } finally {
+                // 4. ### CORREÇÃO COM DELAY ###
+                // Espera 500ms (meio segundo) antes de fechar o modal.
+                // Isto garante que a animação 'show' termine antes de chamarmos 'hide'.
+                setTimeout(() => {
+                    if (loadingModal) loadingModal.hide();
+                }, 500); // 500ms = 0.5 segundos
+            }
+            // --- ### FIM DA LÓGICA AXIOS ### ---
         });
     }
 });

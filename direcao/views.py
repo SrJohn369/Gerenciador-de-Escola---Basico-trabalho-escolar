@@ -36,7 +36,7 @@ def direcao(request):
                                                      'data_cadastros': direcao_data})
     
 
-@login_required(login_url='loginInicio:login')
+@login_required(login_url='loginInicio:login_usuario')
 def altDirecao(request, id):
     direcao = get_object_or_404(Direcao, pk=id)
     
@@ -73,7 +73,7 @@ def altDirecao(request, id):
             return JsonResponse(data={'mensagem': f'Erro interno ao salvar: {e}'}, status=500)
         
         
-@login_required(login_url='loginInicio:login')
+@login_required(login_url='loginInicio:login_usuario')
 def excluirDirecao(request, id):
     if request.method == "DELETE":
         # --- AJUSTE NA EXCLUSÃO ---
